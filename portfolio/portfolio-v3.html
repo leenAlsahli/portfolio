@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portfolio | AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Readex+Pro:wght@200;300;400;500;600&display=swap">
+<style>
+/* Layout: soft off-white beige, neutral ink UI (buttons never clash with project images). Hero = slow beige mist + giant name that moves with scroll + pointer. */
+:root{
+  --bg:#faf7f1; --surface:#ffffff; --fg:#231e15; --muted:#645c4f; --line:#e7e1d4;
+  --accent:#5f574b; --gold:#cfc6b4; --gold-hi:#efe9dc; --gold-lo:#8a8071;
+  --accent-fg:#1f1a0e;
+  /* "dark" tokens now hold the champagne tones used for the tinted sections */
+  --dark:#f1ece1; --dark-fg:#231e15; --dark-muted:#645c4f; --dark-line:#ddd5c4;
+  --f-display:'Readex Pro','IBM Plex Sans Arabic',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans Arabic',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+  --gut:clamp(16px,4vw,56px);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.75;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.15;font-weight:500}
+.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.wrap{padding-inline:var(--gut);max-width:1320px;margin-inline:auto}
+
+/* scroll progress bar */
+#bar{position:fixed;top:0;inset-inline:0;height:2px;z-index:60;background:linear-gradient(90deg,#231e15,#8a8071);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+[dir=rtl] #bar{transform-origin:100% 50%}
+
+/* scroll reveal */
+.rv{opacity:0;transform:translateY(32px);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none;filter:none}
+.sp .w{display:inline-block;opacity:0;transform:translateY(.55em);filter:blur(8px);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease);transition-delay:calc(var(--i)*70ms)}
+.sp.in .w{opacity:1;transform:none;filter:none}
+
+/* nav */
+.nav{position:fixed;inset-inline:0;top:env(safe-area-inset-top,0px);z-index:40;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px var(--gut);color:var(--fg);transition:background .3s,border-color .3s}
+.nav.solid{background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav ul{display:flex;gap:clamp(14px,2.4vw,32px);list-style:none;margin:0;padding:0;font-size:14px}
+.nav a{text-decoration:none}
+.nav ul a{opacity:.75}.nav ul a:hover{opacity:1}
+.nav-r{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}
+.pill{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap;border:1px solid currentColor;background:transparent;border-radius:99px;padding:5px 14px;font-family:var(--f-mono);font-size:12px;letter-spacing:.05em;transition:.25s}
+.pill:hover{background:var(--fg)}.pill:hover>span{color:var(--bg)}
+.pill.ink{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:500}
+.pill.ink:hover{background:transparent}
+.pill.ink>span{color:var(--bg)}.pill.ink:hover>span{color:var(--fg)}
+@media(max-width:640px){.nav li.opt{display:none}.nav ul{gap:14px}}
+
+/* hero (scrolls with the page, no pinning) */
+.hero-wrap{position:relative;height:100svh;min-height:560px}
+.hero{position:relative;height:100%;overflow:hidden;color:var(--dark-fg)}
+.hero-bg{position:absolute;inset:0;overflow:hidden}
+.hero-bg::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,rgba(250,247,241,0) 45%,rgba(250,247,241,.45) 100%),linear-gradient(to bottom,rgba(250,247,241,0) 92%,var(--bg))}
+.blobs,.mist{position:absolute;inset:0;will-change:transform}
+.blobs i{position:absolute;border-radius:50%;will-change:transform}
+.blobs i:nth-child(1){width:64vmax;height:64vmax;left:-16vmax;top:-24vmax;background:radial-gradient(circle,#e8d9bd 0%,rgba(232,217,189,0) 65%);animation:drift1 22s ease-in-out infinite alternate}
+.blobs i:nth-child(2){width:56vmax;height:56vmax;right:-18vmax;top:4vmax;background:radial-gradient(circle,#efe3cf 0%,rgba(239,227,207,0) 65%);animation:drift2 28s ease-in-out infinite alternate}
+.blobs i:nth-child(3){width:50vmax;height:50vmax;left:18%;bottom:-28vmax;background:radial-gradient(circle,#e2d9c7 0%,rgba(226,217,199,0) 65%);animation:drift3 34s ease-in-out infinite alternate}
+.blobs i:nth-child(4){width:40vmax;height:40vmax;left:34%;top:-8vmax;background:radial-gradient(circle,#ffffff 0%,rgba(255,255,255,0) 62%);animation:drift4 24s ease-in-out infinite alternate}
+.blobs i:nth-child(5){width:36vmax;height:36vmax;right:8%;bottom:-10vmax;background:radial-gradient(circle,#ecdcc0 0%,rgba(236,220,192,0) 62%);animation:drift5 30s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate3d(14vmax,10vmax,0) scale(1.18)}}
+@keyframes drift2{to{transform:translate3d(-14vmax,8vmax,0) scale(.9)}}
+@keyframes drift3{to{transform:translate3d(-9vmax,-12vmax,0) scale(1.2)}}
+@keyframes drift4{to{transform:translate3d(-12vmax,9vmax,0) scale(1.25)}}
+@keyframes drift5{to{transform:translate3d(10vmax,-9vmax,0) scale(.88)}}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.32;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero-in{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding-block:clamp(72px,10vh,110px) clamp(20px,4vh,40px);pointer-events:none;max-width:none}
+.hero-in a,.hero-in button{pointer-events:auto}
+.hero-mid{margin-block:auto;padding-bottom:6vh;text-align:center;display:grid;justify-items:center;gap:16px;will-change:transform,opacity}
+.hero h1{font-size:clamp(60px,15vw,230px);font-weight:500;letter-spacing:-.045em;line-height:.98;will-change:transform}
+:lang(ar) .hero h1{letter-spacing:0}
+.hero h1 .hw{display:inline-block;overflow:hidden;will-change:transform;vertical-align:top;padding:.16em .04em;margin:-.16em -.04em}
+.hero h1 .hw>span{display:inline-block;transform:translateY(115%);animation:up 1.15s var(--ease) forwards;animation-delay:calc(.15s + var(--i)*.13s)}
+.hair{display:block;width:min(220px,40vw);height:1px;background:linear-gradient(90deg,transparent,var(--fg),transparent);opacity:.35;transform:scaleX(0);animation:draw 1.4s .9s var(--ease) forwards}
+@keyframes up{to{transform:none}}
+@keyframes draw{to{transform:scaleX(1)}}
+.hero .role{font-size:clamp(16px,2vw,22px);color:var(--dark-muted);max-width:44ch;margin:0;animation:fade 1.2s .6s both}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.hero-foot{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;justify-content:space-between;animation:fade 1.2s .9s backwards}
+.uni{display:flex;align-items:center;gap:12px;min-width:0}
+.uni-logo{width:54px;height:54px;flex:none;border-radius:12px;border:1px solid var(--dark-line);display:grid;place-items:center;overflow:hidden;background:rgba(255,255,255,.7)}
+.uni-logo.has{width:auto;height:auto;border:0;border-radius:0;background:none;overflow:visible;display:block}
+.uni-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.uni-logo.has img{width:auto;height:56px;max-width:96px;object-fit:contain}
+.uni-logo svg{width:26px;height:26px;color:var(--accent)}
+.uni b{display:block;font-weight:500;font-size:15px;line-height:1.4}
+.uni span{color:var(--dark-muted);font-size:13px}
+.acts-hero{display:flex;gap:10px;flex-wrap:wrap}
+.cue{position:absolute;left:50%;bottom:clamp(14px,3vh,26px);width:1px;height:46px;background:rgba(35,30,21,.16);overflow:hidden;z-index:2;display:none}
+.cue::after{content:"";position:absolute;left:0;top:-40%;width:1px;height:40%;background:var(--fg);animation:cue 2.2s var(--ease) infinite}
+@keyframes cue{to{top:100%}}
+@media(min-width:1000px){.cue{display:block}}
+
+/* brand-style action buttons */
+.sb{display:inline-flex;align-items:center;gap:9px;text-decoration:none;border-radius:99px;padding:11px 20px;font-size:14px;font-weight:500;line-height:1;color:var(--fg);background:rgba(255,255,255,.62);border:1px solid rgba(35,30,21,.16);backdrop-filter:blur(8px);white-space:nowrap;transition:background .3s var(--ease),color .3s,border-color .3s,transform .3s var(--ease),box-shadow .3s}
+.sb svg{width:18px;height:18px;flex:none;fill:currentColor}
+.sb svg.st{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sb:hover{background:var(--fg);color:var(--bg);border-color:var(--fg);box-shadow:0 12px 24px -14px rgba(35,30,21,.6)}
+.sb.cv{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sb.cv:hover{background:transparent;color:var(--fg)}
+
+/* focus strip (replaces the moving text band) */
+.focus{position:relative;background:var(--surface);border-block:1px solid var(--line)}
+.focus-in{display:grid;grid-template-columns:repeat(4,1fr)}
+.fc{position:relative;padding:clamp(22px,3vw,38px) clamp(16px,2vw,28px);border-inline-end:1px solid var(--line);display:grid;gap:8px;align-content:start;transition:background .5s var(--ease)}
+.fc:last-child{border-inline-end:0}
+.fc::before{content:"";position:absolute;inset-inline:0;top:-1px;height:2px;background:var(--fg);transform:scaleX(0);transform-origin:0 50%;transition:transform .7s var(--ease)}
+[dir=rtl] .fc::before{transform-origin:100% 50%}
+.fc:hover{background:var(--dark)}
+.fc:hover::before{transform:scaleX(1)}
+.fc i{font-style:normal;font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.12em}
+.fc b{font-family:var(--f-display);font-weight:400;font-size:clamp(18px,2vw,26px);line-height:1.2}
+.fc p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+@media(max-width:860px){.focus-in{grid-template-columns:1fr 1fr}.fc:nth-child(2){border-inline-end:0}.fc:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+
+/* sections */
+section{padding-block:clamp(64px,10vw,120px);position:relative}
+/* every section has its own beige (slightly see-through so the floating dust still shows) */
+#about{background:rgba(247,241,229,.9)}
+#projects{background:rgba(252,250,245,.9)}
+#skills{background:rgba(243,235,219,.9)}
+#certs{background:rgba(249,244,234,.9)}
+#lead{background:rgba(245,238,224,.9)}
+.eyebrow{color:var(--accent);margin-bottom:18px;display:block}
+.about{display:grid;grid-template-columns:1fr 1.5fr;gap:clamp(24px,6vw,96px)}
+.about h2{font-size:clamp(26px,3.6vw,46px)}
+.about p{margin:0 0 1em;font-size:clamp(16px,1.4vw,19px);max-width:60ch}
+.langs{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.langs span{border:1px solid var(--line);border-radius:99px;padding:6px 16px;font-size:14px;background:var(--surface)}
+.langs em{font-style:normal;color:var(--muted);font-family:var(--f-mono);font-size:12px;margin-inline-start:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0;margin-top:clamp(40px,7vw,80px);border-top:1px solid var(--line)}
+.stat{padding:24px 0;border-bottom:1px solid var(--line)}
+.stat b{display:block;font-family:var(--f-display);font-weight:300;font-size:clamp(36px,5vw,64px);line-height:1;font-variant-numeric:tabular-nums;background:linear-gradient(120deg,#231e15,#6f665a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{color:var(--muted);font-size:14px}
+@media(max-width:800px){.about{grid-template-columns:1fr}}
+
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:clamp(28px,5vw,56px)}
+.sec-head h2{font-size:clamp(30px,4.6vw,56px);font-weight:500;letter-spacing:-.02em}
+
+/* projects: one layout for all */
+.proj{display:grid;gap:clamp(56px,9vw,110px)}
+.card{display:grid;gap:22px;cursor:pointer;text-align:start;padding:0;width:100%}
+.frame{position:relative;aspect-ratio:16/8;overflow:hidden;margin-inline:var(--inset,9%);border-radius:var(--rad,28px);background:var(--dark);box-shadow:0 30px 60px -40px rgba(35,30,21,.4)}
+.frame>.media{position:absolute;inset:0;transform:scale(var(--z,1.35));transform-origin:50% 50%;will-change:transform}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:700px){.frame{aspect-ratio:4/3}}
+.art{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;color:#3a342a;background:#f3eee4}
+.art::before{content:"";position:absolute;inset:-30%;background:conic-gradient(from calc(var(--h)*1deg) at 50% 55%,#f3eee4,#e6dfcf 18%,#d6cdb9 30%,#faf7f1 45%,#e2dac8 65%,#efe9dc 78%,#f3eee4);filter:blur(50px);opacity:.9}
+.art::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(35,30,21,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(35,30,21,.07) 1px,transparent 1px);background-size:40px 40px}
+.art b{position:relative;z-index:1;font-family:var(--f-display);font-size:clamp(28px,6vw,80px);font-weight:600;letter-spacing:-.03em;text-align:center;padding-inline:16px;text-shadow:0 2px 30px rgba(255,255,255,.6)}
+.card-meta{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding-inline:9%}
+.card-meta h3{font-size:clamp(22px,3vw,36px);font-weight:500}
+.card-meta p{margin:6px 0 0;color:var(--muted);max-width:52ch}
+.card-meta .go{flex:none;width:52px;height:52px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.3s var(--ease);background:var(--surface)}
+.card:hover .go{background:var(--fg);color:var(--bg);border-color:var(--fg);transform:scale(1.08)}
+.go svg{width:20px;height:20px}
+[dir=rtl] .go svg{transform:scaleX(-1)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tags span{font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--muted);background:var(--surface)}
+.demo{display:inline-flex;align-items:center;gap:8px;margin-top:16px;text-decoration:none;border-radius:99px;padding:9px 20px;font-size:14px;font-weight:500;background:var(--fg);color:var(--bg);border:1px solid var(--fg);transition:background .3s var(--ease),color .3s,transform .25s var(--ease),box-shadow .25s}
+.demo:hover{background:transparent;color:var(--fg)}
+.demo svg{width:16px;height:16px;fill:currentColor;flex:none}
+
+.dark{background:linear-gradient(180deg,#f5f0e6,#eee7da);color:var(--dark-fg)}
+.dark .eyebrow{color:var(--accent)}
+.skills-t{font-size:clamp(30px,4.6vw,56px);font-weight:500;letter-spacing:-.02em;margin-bottom:clamp(28px,5vw,56px)}
+
+/* certs */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(20px,3vw,36px)}
+.cert{display:grid;gap:14px;align-content:start;min-width:0}
+.cert .cf{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--dark);border:1px solid var(--line);cursor:zoom-in}
+.cert .cf img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s var(--ease)}
+.cert .cf:hover img{transform:scale(1.06)}
+.cert .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--accent);background:radial-gradient(circle at 50% 40%,#fdfbf6,#efe9dc 85%)}
+.cert .ph::before{content:"";position:absolute;inset:12px;border:1px solid rgba(111,102,90,.35);border-radius:8px}
+.cert .ph b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.3}
+.cert .org{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.cert h3{font-size:19px;line-height:1.35}
+.cert small{color:var(--muted);font-size:14px;line-height:1.6}
+.up{position:absolute;inset-block-end:10px;inset-inline-end:10px;z-index:2;background:var(--fg);color:var(--bg);border-radius:99px;padding:3px 12px;font-family:var(--f-mono);font-size:11px;cursor:pointer}
+
+/* leadership */
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list li{padding:26px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:8px 32px}
+.list .org{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);grid-column:1/-1}
+.list h3{font-size:clamp(20px,2.4vw,28px);font-weight:400}
+.list small{color:var(--muted);font-size:15px;align-self:center}
+@media(max-width:700px){.list li{grid-template-columns:1fr}}
+h2.mid{font-size:clamp(28px,4vw,48px);margin-bottom:clamp(24px,4vw,44px);letter-spacing:-.02em}
+
+/* contact (warm gold) */
+.contact{background:linear-gradient(160deg,#f3eee3,#e9e1d0);--dark-line:rgba(35,30,21,.2);--dark-muted:#5a5245}
+.contact h2{font-size:clamp(34px,6vw,76px);font-weight:600;letter-spacing:-.03em;margin-bottom:clamp(24px,5vw,48px)}
+.contact h2 .w{background:linear-gradient(100deg,#231e15,#5a5245);-webkit-background-clip:text;background-clip:text;color:transparent;padding-inline:.05em}
+.crow{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;padding-block:20px;border-top:1px solid var(--dark-line);text-decoration:none;min-width:0;transition:padding .4s var(--ease)}
+.crow:last-of-type{border-bottom:1px solid var(--dark-line)}
+.crow .mono{color:var(--dark-muted)}
+.crow strong{font-family:var(--f-display);font-weight:300;font-size:clamp(16px,2vw,24px);overflow-wrap:anywhere;direction:ltr;text-align:start}
+.crow button{background:transparent;border:1px solid var(--dark-line);color:var(--dark-fg);border-radius:99px;padding:5px 14px;font-family:var(--f-mono);font-size:12px}
+.crow button:hover{border-color:var(--fg);background:rgba(255,255,255,.4)}
+a.crow:hover{padding-inline-start:16px}.contact a.crow:hover strong{color:var(--fg)}
+@media(max-width:560px){.crow{grid-template-columns:1fr auto}.crow .mono{grid-column:1/-1}}
+footer{padding-block:28px 0;color:var(--dark-muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:32px}
+
+/* sheet + lightbox */
+.sheet{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;transform:translateY(100%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;padding-top:env(safe-area-inset-top,0px)}
+.sheet.open{transform:none;visibility:visible;transition:transform .55s var(--ease)}
+.sheet-bar{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:14px var(--gut);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.sheet-bar .pill{color:var(--fg)}
+.sheet h2{font-size:clamp(32px,5.5vw,64px);letter-spacing:-.03em;margin-block:clamp(28px,6vw,64px) 12px}
+.sheet .sum{font-size:clamp(17px,1.8vw,21px);max-width:60ch;color:var(--muted);margin:0 0 28px}
+.gal{display:grid;gap:clamp(24px,4vw,48px);margin-block:32px 48px}
+.gal .frame{aspect-ratio:16/10}
+.add{aspect-ratio:16/6;border:1px dashed var(--line);border-radius:20px;display:grid;place-items:center;color:var(--muted);width:100%;cursor:pointer}
+.sheet-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,80px);padding-bottom:64px}
+@media(max-width:800px){.sheet-cols{grid-template-columns:1fr}}
+.sheet h3{font-size:13px;font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:12px}
+.sheet ul.b{margin:0 0 28px;padding-inline-start:20px}.sheet ul.b li{margin-bottom:6px}
+.links{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;border-radius:99px;padding:12px 26px;font-size:15px;font-weight:500;background:var(--fg);color:var(--bg);border:1px solid var(--fg);transition:background .3s var(--ease),color .3s,transform .3s var(--ease)}
+.btn:hover{background:transparent;color:var(--fg)}
+#lb{position:fixed;inset:0;z-index:90;background:rgba(250,247,241,.96);display:grid;place-items:center;padding:24px;visibility:hidden;opacity:0;transition:opacity .3s,visibility 0s .3s;cursor:zoom-out}
+#lb.open{visibility:visible;opacity:1;transition:opacity .3s}
+#lb img{max-width:100%;max-height:100%;border-radius:8px;transform:scale(.94);transition:transform .5s var(--ease);box-shadow:0 30px 80px -30px rgba(35,30,21,.5)}
+#lb.open img{transform:none}
+
+/* ---- background dust ---- */
+#dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.contact{background:linear-gradient(160deg,rgba(241,232,214,.92),rgba(234,223,201,.92))}
+
+/* ---- skills: icon cards, pinned, sideways with vertical scroll ---- */
+.hs{position:relative}
+.hs-in{position:sticky;top:0;height:100svh;min-height:540px;display:flex;flex-direction:column;justify-content:center;gap:clamp(22px,4.5vh,48px);overflow:hidden}
+.hs-head{text-align:center;display:grid;justify-items:center;gap:10px}
+.hs-head .eyebrow{margin:0}
+.hs-head .skills-t{margin:0}
+.hs-sub{margin:0;color:var(--muted);font-size:clamp(15px,1.6vw,19px)}
+.hs-track{--skw:clamp(148px,14vw,184px);display:grid;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:var(--skw);gap:clamp(14px,2vw,24px);padding-inline:var(--gut);width:max-content;direction:ltr;will-change:transform}
+.sk{border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.72);backdrop-filter:blur(6px);padding:22px 14px 20px;display:grid;justify-items:center;align-content:start;gap:12px;text-align:center;transition:transform .4s var(--ease),box-shadow .4s,border-color .4s,background .4s}
+html[dir=rtl] .sk{direction:rtl}
+.sk:hover{transform:translateY(-6px);border-color:rgba(35,30,21,.35);background:#fff;box-shadow:0 22px 40px -26px rgba(35,30,21,.5)}
+.sk .ic{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);color:var(--fg)}
+.sk .ic svg{width:28px;height:28px;fill:currentColor}
+.sk .ic svg.st{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sk b{font-family:var(--f-display);font-weight:500;font-size:15.5px;line-height:1.3;text-wrap:balance}
+.hs-prog{width:100%}
+.hs-line{position:relative;height:2px;background:rgba(35,30,21,.12);border-radius:99px;max-width:560px;margin-inline:auto}
+.hs-line i{position:absolute;top:50%;left:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 5px rgba(35,30,21,.1)}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv,.sp .w{transition:none}.hero h1 .hw>span{animation:none;transform:none}.hero .role,.hero-foot{animation:none}.hair{animation:none;transform:none}.blobs i{animation:none}.cue::after{animation:none}.hs-in{position:static;height:auto;min-height:0;padding-block:64px}.hs-track{width:auto;overflow-x:auto;padding-bottom:14px}.hs-prog{display:none}}
+
+/* ---- contact: info rows + message form ---- */
+.ctwo{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,72px);align-items:start}
+@media(max-width:860px){.ctwo{grid-template-columns:1fr}}
+.crow{grid-template-columns:150px 1fr auto}
+@media(max-width:560px){.crow{grid-template-columns:1fr auto}}
+.crow .mono{display:flex;align-items:center;gap:10px}
+.ci{width:32px;height:32px;flex:none;border-radius:50%;background:rgba(255,255,255,.75);border:1px solid var(--dark-line);display:grid;place-items:center;color:var(--fg)}
+.ci svg{width:15px;height:15px;fill:currentColor}
+.ci svg.st{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cform{display:grid;gap:14px;background:rgba(255,255,255,.6);border:1px solid var(--dark-line);border-radius:22px;padding:clamp(20px,3vw,32px);backdrop-filter:blur(8px);position:relative}
+.cform h3{margin:0 0 2px;font-size:12px;color:var(--dark-muted);font-weight:500}
+.cform label{display:grid;gap:6px;font-size:13px;color:var(--dark-muted)}
+.cform input:not([name=_gotcha]),.cform textarea{font:inherit;font-size:16px;color:var(--fg);background:rgba(255,255,255,.9);border:1px solid var(--dark-line);border-radius:12px;padding:12px 14px;width:100%;resize:vertical;transition:border-color .25s,box-shadow .25s}
+.cform input:focus,.cform textarea:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 3px rgba(35,30,21,.08)}
+.cform .btn{justify-self:start;cursor:pointer}
+.cform .btn[disabled]{opacity:.6;cursor:wait}
+.fnote{margin:0;font-size:14px;min-height:1.5em;color:var(--dark-muted)}
+.fnote.ok{color:#2f6b45}.fnote.err{color:#9a3b2f}
+.toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 74px);inset-inline-end:16px;z-index:95;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 18px;font-size:14px;box-shadow:0 18px 40px -20px rgba(35,30,21,.5);opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .35s,transform .45s var(--ease)}
+.toast.show{opacity:1;transform:none}
+.toast i{width:22px;height:22px;border-radius:50%;background:#2f6b45;color:#fff;display:grid;place-items:center;flex:none}
+.toast i svg{width:13px;height:13px}
+</style>
+</head>
+<body>
+
+<canvas id="dust" aria-hidden="true"></canvas><div id="bar"></div>
+
+<header class="nav" id="nav">
+  <nav><ul>
+    <li><a href="#about" data-t="nav_about"></a></li>
+    <li><a href="#projects" data-t="nav_projects"></a></li>
+    <li class="opt"><a href="#skills" data-t="nav_skills"></a></li>
+    <li class="opt"><a href="#certs" data-t="nav_certs"></a></li>
+    <li><a href="#contact" data-t="nav_contact"></a></li>
+  </ul></nav>
+  <div class="nav-r">
+    <a class="pill ink" data-hire><span data-t="hire"></span></a>
+    <button class="pill" id="langBtn" type="button" aria-label="Language"><span></span></button>
+  </div>
+</header>
+
+<div class="hero-wrap" id="heroWrap">
+ <div class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"><div class="blobs" id="blobs" aria-hidden="true"><div class="mist" id="mist"><i></i><i></i><i></i><i></i><i></i></div></div><div class="grain" aria-hidden="true"></div></div>
+  <div class="hero-in wrap">
+    <div class="hero-mid" id="heroMid">
+      <h1 id="heroName"></h1>
+      <i class="hair" aria-hidden="true"></i>
+      <p class="role" data-t="hero_role"></p>
+    </div>
+    <div class="hero-foot" id="heroFoot">
+      <div class="uni">
+        <label class="uni-logo" id="logoSlot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11.5V16c0 1.5 2.2 3 5 3s5-1.5 5-3v-4.5"/></svg></label>
+        <div><b data-t="uni"></b><span data-t="uni_sub"></span></div>
+      </div>
+      <div class="acts-hero" data-acts></div>
+    </div>
+  </div>
+  <div class="cue" id="cue" aria-hidden="true"></div>
+ </div>
+</div>
+
+<div class="focus"><div class="wrap focus-in" id="focusIn"></div></div>
+
+<section id="about"><div class="wrap">
+  <div class="about">
+    <div><span class="eyebrow mono" data-t="nav_about"></span><h2 data-split data-t="about_h"></h2></div>
+    <div><p data-t="about_1"></p><p data-t="about_2"></p><p data-t="about_3"></p><div class="langs" id="langs"></div></div>
+  </div>
+  <div class="stats" id="stats"></div>
+</div></section>
+
+<section id="projects"><div class="wrap">
+  <div class="sec-head"><h2 data-split data-t="proj_h"></h2></div>
+  <div class="proj" id="projList"></div>
+</div></section>
+
+<section id="skills" style="padding:0"><div class="hs" id="hs">
+  <div class="hs-in" id="hsIn">
+    <div class="wrap hs-head">
+      <span class="eyebrow mono" data-t="nav_skills"></span>
+      <h2 class="skills-t" data-split data-t="skills_h"></h2>
+      <p class="hs-sub" data-t="skills_sub"></p>
+    </div>
+    <div class="hs-track" id="hsTrack"></div>
+    <div class="wrap hs-prog"><div class="hs-line"><i id="hsDot"></i></div></div>
+  </div>
+</div></section>
+
+<section id="certs"><div class="wrap">
+  <h2 class="mid" data-split data-t="cert_h"></h2>
+  <div class="cgrid" id="certList"></div>
+</div></section>
+
+<section id="lead"><div class="wrap">
+  <h2 class="mid" data-split data-t="lead_h"></h2>
+  <ul class="list" id="leads"></ul>
+</div></section>
+
+<section id="contact" class="contact"><div class="wrap">
+  <span class="eyebrow mono" data-t="nav_contact"></span>
+  <h2 data-split data-t="contact_h"></h2>
+  <div class="ctwo">
+    <div id="contactRows"></div>
+    <form class="cform rv" id="cform" novalidate>
+      <h3 class="mono" data-t="f_title"></h3>
+      <label><span data-t="f_name"></span><input name="name" type="text" autocomplete="name" required></label>
+      <label><span data-t="f_email"></span><input name="email" type="email" dir="ltr" autocomplete="email" required></label>
+      <label><span data-t="f_msg"></span><textarea name="message" rows="5" required></textarea></label>
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+      <button class="btn" type="submit"><span data-t="f_send"></span> ↗</button>
+      <p class="fnote" id="fnote" role="status"></p>
+    </form>
+  </div>
+  <footer><span id="foot"></span></footer>
+</div></section>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="sheet-bar"><span class="mono" id="sheetKick"></span><button class="pill" id="closeBtn" type="button"><span data-t="close"></span></button></div>
+  <div class="wrap" id="sheetBody"></div>
+</div>
+<div id="lb"><img alt=""></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="toastMsg"></span></div>
+
+<script>
+/* ============ EDIT HERE ============ */
+const PROFILE = {
+  name:{ar:"لين السهلي", en:"Leen Alsahli"},
+  linkedin:"https://www.linkedin.com/in/leen-alsahli-1064a6305",
+  email:"leenfahadals@gmail.com",
+  phone:"+966 50 920 9585",
+  github:"https://github.com/leenAlsahli",
+  cv:"cv.pdf",         // put your CV PDF next to this file with this name
+  formEndpoint:"" // OPTIONAL: paste a Formspree / Web3Forms URL so the contact form sends straight to your inbox (empty = it opens the visitor's email app)
+};
+const LINKS = {
+  rasd:"https://github.com/leenAlsahli/Rasd", nizami:"https://nizami-vmfp.onrender.com/", lumen:"https://lumen-0o3w.onrender.com",
+  wesal:"https://wesal-47v6.vercel.app/", nakhla:"https://nakhla-and-finjan.onrender.com", wtg:"https://where-to-go-urg2.vercel.app/",
+  aoun:"https://www.figma.com/proto/QyhawXStjrNXOsVNMIaBL1/Untitled?node-id=137-870&viewport=437%2C724%2C0.12&t=kMJnl4LjNvS3Q63m-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=70%3A3497&show-proto-sidebar=1&page-id=68%3A3446"
+};
+const UNI_LOGO = "images/logo.png"; // university logo (put the file in the images folder)
+/* ==================================== */
+
+const UI = {
+ar:{
+ nav_about:"نبذة",nav_projects:"المشاريع",nav_skills:"المهارات",nav_certs:"الشهادات",nav_contact:"تواصل",
+ hero_role:"طالبة علوم حاسب في السنة الأخيرة، أبني نماذج ذكاء اصطناعي وأحوّلها إلى تطبيقات يستخدمها الناس.",
+ uni:"جامعة الإمام محمد بن سعود الإسلامية",uni_sub:"علوم الحاسب · السنة الأخيرة",hire:"وظّفني",
+ a_linkedin:"LinkedIn",a_email:"البريد",a_github:"GitHub",a_cv:"السيرة الذاتية",
+ about_h:"من البيانات إلى نظام يعمل.",
+ about_1:"أنا طالبة علوم حاسب في السنة الأخيرة، متخصصة في الذكاء الاصطناعي وتعلم الآلة.",
+ about_2:"أبني نماذج الذكاء الاصطناعي وأطوّرها: أجهّز البيانات وأنظّفها، أدرّب النماذج وأقيّم أداءها، ثم أدمجها داخل أنظمة وتطبيقات عملية.",
+ about_3:"يشدّني معالجة اللغة الطبيعية، النماذج اللغوية الكبيرة، أنظمة RAG والتعلم العميق، وأحب تحويل هذه التقنيات إلى حلول تدور حول المستخدم، تجمع تطوير النماذج وهندسة البرمجيات وتصميم التجربة.",
+ s_proj:"مشاريع",s_cert:"شهادات ودورات",s_lead:"أدوار قيادية",s_lang:"لغات",
+ proj_h:"المشاريع",
+ skills_h:"المهارات",cert_h:"الشهادات والدورات",lead_h:"القيادة والتطوع",
+ contact_h:"تواصلوا معي.",skills_sub:"التقنيات والأدوات والمهارات التي أعمل بها",f_title:"أرسل لي رسالة",f_name:"الاسم",f_email:"البريد الإلكتروني",f_msg:"رسالتك",f_send:"إرسال الرسالة",f_sending:"جارٍ الإرسال…",f_ok:"تم إرسال رسالتك بنجاح",f_err:"تعذّر الإرسال، حاول مجددًا أو راسلني على البريد مباشرة.",f_err_v:"فضلًا اكتب اسمك وبريدًا صحيحًا ورسالتك.",f_mailto:"سيفتح تطبيق البريد لديك لإكمال الإرسال.",
+ close:"إغلاق",type_built:"ما قمت ببنائه",type_tech:"التقنيات",learned:"ما تعلمته",live:"افتح اللايف ديمو",prototype:"افتح البروتوتايب",
+ card_live:"افتح اللايف ديمو",card_proto:"افتح البروتوتايب",card_gh:"افتح على GitHub",
+ copy:"نسخ",copied:"تم النسخ",addimg:"+ أضف صورة",linkedin:"لينكدإن",email:"البريد",phone:"الجوال",github:"جيت هب",
+ lang_ar:"العربية",lang_en:"الإنجليزية",lvl_native:"اللغة الأم",lvl_course:"متقدم",certimg:"صورة الشهادة"
+},
+en:{
+ nav_about:"About",nav_projects:"Projects",nav_skills:"Skills",nav_certs:"Certificates",nav_contact:"Contact",
+ hero_role:"Senior computer science student building AI models and turning them into applications people can use.",
+ uni:"Imam Mohammad Ibn Saud Islamic University",uni_sub:"Computer Science · Senior year",hire:"Hire me",
+ a_linkedin:"LinkedIn",a_email:"Email",a_github:"GitHub",a_cv:"CV",
+ about_h:"From raw data to a working system.",
+ about_1:"I am a senior computer science student specializing in artificial intelligence and machine learning.",
+ about_2:"I build and develop AI models: preparing and cleaning data, training models, evaluating them, then integrating them into practical systems and applications.",
+ about_3:"I am drawn to natural language processing, large language models, RAG systems and deep learning, and I like turning them into user-centered solutions that combine model development, software engineering and experience design.",
+ s_proj:"Projects",s_cert:"Certificates & courses",s_lead:"Leadership roles",s_lang:"Languages",
+ proj_h:"Projects",
+ skills_h:"Skills",cert_h:"Certifications & Courses",lead_h:"Leadership & Volunteering",
+ contact_h:"Get in touch.",skills_sub:"The technologies, tools and strengths I work with",f_title:"Send me a message",f_name:"Name",f_email:"Email",f_msg:"Your message",f_send:"Send message",f_sending:"Sending…",f_ok:"Message sent successfully",f_err:"Couldn't send. Please try again or email me directly.",f_err_v:"Please enter your name, a valid email and your message.",f_mailto:"Your email app will open to finish sending.",
+ close:"Close",type_built:"What I built",type_tech:"Technologies",learned:"What I learned",live:"Open live demo",prototype:"Open prototype",
+ card_live:"Open live demo",card_proto:"Open prototype",card_gh:"View on GitHub",
+ copy:"Copy",copied:"Copied",addimg:"+ Add image",linkedin:"LinkedIn",email:"Email",phone:"Phone",github:"GitHub",
+ lang_ar:"Arabic",lang_en:"English",lvl_native:"Native",lvl_course:"Advanced",certimg:"Certificate image"
+}};
+
+const P = [
+{id:"lumen",h:200,link:LINKS.lumen,
+ name:{ar:"Lumen",en:"Lumen"},sub:{ar:"نظام رؤية حاسوبية بالتعلم العميق",en:"Computer vision with deep learning"},
+ type:"Computer Vision Deep Learning System",
+ sum:{ar:"نظام تعلم عميق يحلل الصور باستخدام نموذج CNN.",en:"A deep learning system that analyzes images using a CNN model."},
+ built:{ar:["بناء نموذج تعلم عميق باستخدام CNN","تدريب النموذج على بيانات صور","تقييم الأداء وتحليل النتائج","دمج النموذج داخل نظام يستفيد من نتائج التنبؤ"],en:["Built a deep learning model with a CNN","Trained the model on image data","Evaluated performance and analyzed results","Integrated the model into a system that uses its predictions"]},
+ tech:["Python","Deep Learning","CNN","Computer Vision","TensorFlow","Keras","FastAPI"],learned:null},
+{id:"rasd",h:20,link:LINKS.rasd,gh:1,
+ name:{ar:"رصد",en:"Rasd"},sub:{ar:"محلل آراء العملاء باللهجة السعودية",en:"Saudi-dialect customer opinion analyzer"},
+ type:"AI-Powered Arabic NLP System",
+ sum:{ar:"نظام ذكاء اصطناعي يحلل آراء العملاء المكتوبة باللهجة السعودية ويستخرج رؤى من تقييماتهم باستخدام معالجة اللغة الطبيعية.",en:"An AI system that analyzes customer opinions written in the Saudi dialect and extracts insights from their reviews using natural language processing."},
+ built:{ar:["إنشاء وتجهيز Dataset خاصة بالمشروع","تنظيف ومعالجة البيانات النصية وتجهيزها للتدريب","تدريب وتجربة أكثر من نموذج لتحليل وتصنيف النصوص","تطوير نماذج لتحليل المشاعر وتصنيف نوايا المستخدمين","بناء نظام متكامل لعرض نتائج التحليل واستخراج الرؤى"],en:["Created and prepared a dedicated dataset","Cleaned and processed text data for training","Trained and compared several models for text analysis and classification","Developed sentiment analysis and user-intent classification models","Built a complete system that presents the analysis and extracts insights"]},
+ tech:["Python","NLP","Transformer Models","Arabic Language Models","Machine Learning","Flask"],
+ learned:{ar:["بناء دورة عمل كاملة لمشاريع NLP من البيانات إلى النموذج النهائي","التعامل مع تحديات اللغة العربية واللهجات","مقارنة أداء النماذج واختيار الأنسب","دمج النماذج داخل تطبيقات عملية"],en:["Building a full NLP workflow from data to final model","Handling the challenges of Arabic and its dialects","Comparing model performance and choosing the right one","Integrating models into practical applications"]}},
+{id:"nizami",h:110,link:LINKS.nizami,
+ name:{ar:"نظامي",en:"Nizami"},sub:{ar:"سؤال وجواب قانوني باستخدام RAG",en:"Legal Q&A using RAG"},
+ type:"Retrieval-Augmented Generation System",
+ sum:{ar:"نظام يعتمد على RAG لاسترجاع المعلومات من وثائق نظام العمل السعودي ويسهّل وصول المستخدم إلى المعلومات القانونية.",en:"A RAG-based system that retrieves information from Saudi Labor Law documents and makes legal information easier to reach."},
+ built:{ar:["بناء نظام RAG لمعالجة واسترجاع المعلومات من الوثائق القانونية","تجهيز وربط مصادر المعرفة داخل النظام","تصميم آلية استرجاع مرتبطة باستفسار المستخدم","دمج الاسترجاع مع نموذج لغوي لتوليد إجابات مبنية على المصادر"],en:["Built a RAG system to process and retrieve legal document content","Prepared and connected the knowledge sources","Designed retrieval that matches the user's question","Combined retrieval with a language model to generate source-grounded answers"]},
+ tech:["RAG","LLMs","OpenAI API","NLP","Vector Databases","Python","Flask"],
+ learned:{ar:["بناء تطبيقات تعتمد على النماذج اللغوية الكبيرة","تصميم أنظمة استرجاع المعرفة","تحسين جودة الإجابات بالسياق والمصادر"],en:["Building applications on large language models","Designing knowledge retrieval systems","Improving answer quality with context and sources"]}},
+{id:"wesal",h:290,link:LINKS.wesal,
+ name:{ar:"وصال",en:"Wesal"},sub:{ar:"نظام إدارة تواصل ودعم",en:"Communication and support management"},
+ type:"Full-Stack Application",
+ sum:{ar:"تطبيق متكامل ينظّم التواصل ويدير الطلبات بين المستخدمين والجهات المسؤولة.",en:"A complete application that organizes communication and manages requests between users and responsible parties."},
+ built:{ar:["تطوير تطبيق Full-Stack متكامل","بناء واجهات المستخدم","تطوير الـ Backend وربطه بقاعدة بيانات Supabase","إدارة تدفق البيانات بين أجزاء النظام"],en:["Developed a complete full-stack application","Built the user interfaces","Developed the backend and connected it to a Supabase database","Managed data flow between system components"]},
+ tech:["Frontend","Backend","JavaScript","Supabase"],learned:null},
+{id:"nakhla",h:60,link:LINKS.nakhla,
+ name:{ar:"نخلة وفنجان",en:"Nakhla & Finjan"},sub:{ar:"لعبة ذكاء اصطناعي بطابع سعودي",en:"A Saudi-themed AI game"},
+ type:"AI Game Development Project",
+ sum:{ar:"لعبة XO بطابع سعودي طُوّرت بخوارزميات ذكاء اصطناعي مختلفة مع مقارنة أداء كل خوارزمية.",en:"A Saudi-themed XO game built with different AI algorithms, comparing how each performs."},
+ built:{ar:["لعبة يواجه فيها اللاعب الذكاء الاصطناعي","خيارات للتحكم بمستوى الصعوبة","تطبيق أكثر من خوارزمية لاتخاذ القرار","تحليل ومقارنة أداء الخوارزميات"],en:["A game where the player faces the AI","Difficulty level options","Several algorithms for decision making","Analysis and comparison of algorithm performance"]},
+ tech:["Artificial Intelligence","Game Algorithms","Algorithm Analysis","Python","Flask"],learned:null},
+{id:"wtg",h:150,link:LINKS.wtg,
+ name:{ar:"Where To Go",en:"Where To Go"},sub:{ar:"منصة اكتشاف الفعاليات في السعودية",en:"Saudi events discovery platform"},
+ type:"Saudi Events Discovery Platform",
+ sum:{ar:"منصة تساعد الزوار والسياح القادمين إلى السعودية على اكتشاف الفعاليات والأماكن والتجارب المتاحة خلال زيارتهم.",en:"A platform that helps visitors and tourists in Saudi Arabia discover events, places and experiences during their stay."},
+ built:{ar:["تصميم منصة تقود المستخدم إلى الفعاليات المناسبة","تطوير تجربة مستخدم لاكتشاف الأنشطة","تصميم حل رقمي يربط الزوار بالتجارب المحلية"],en:["Designed a platform that guides users to suitable events","Developed a user experience for discovering activities","Designed a digital solution connecting visitors with local experiences"]},
+ tech:["Full-Stack Development","JavaScript","Web Technologies","UX Design"],learned:null},
+{id:"aoun",h:240,link:LINKS.aoun,proto:1,
+ name:{ar:"عون",en:"Aoun"},sub:{ar:"نموذج أولي لحل متمحور حول الإنسان",en:"Human-centered solution prototype"},
+ type:"Human-Centered System Design Prototype",
+ sum:{ar:"نموذج أولي لحلول مستقبلية تتمحور حول المستخدم، يدرس دمج التقنيات الحديثة والذكاء الاصطناعي لتحسين التجربة الأكاديمية.",en:"A prototype for user-centered future solutions, studying how modern technology and AI can improve the academic experience."},
+ built:{ar:["تحليل فكرة النظام وتحديد مكوناته","تصميم System Architecture","إنشاء System Flow","إعداد مخططات توضح تصميم النظام","تطوير Prototype باستخدام Figma"],en:["Analyzed the system idea and defined its components","Designed the system architecture","Created the system flow","Prepared diagrams explaining the design","Built a prototype in Figma"]},
+ tech:["System Architecture","UML Diagrams","Figma","UI/UX Design"],learned:null},
+{id:"ejad",h:330,
+ name:{ar:"إيجاد",en:"Ejad"},sub:{ar:"نظام شبكي Client-Server",en:"Client-Server network system"},
+ type:"Network-Based Client-Server System",
+ sum:{ar:"نظام شبكي يطبق معمارية Client-Server عبر بروتوكول TCP: العميل يرسل الطلبات، والخادم يعالجها ويعيد النتائج.",en:"A network system applying client-server architecture over TCP: the client sends requests and the server processes them and returns results."},
+ built:{ar:["نظام اتصال بين Client و Server عبر TCP","آلية لتبادل البيانات بين الطرفين","Server يستقبل الطلبات ويعالجها ويرسل النتائج","واجهة Client للتواصل مع الخادم","مراقبة عبر Live Logs","قياس أداء الاتصال بـ RTT","دعم عدة طلبات بـ Multi-threading"],en:["Client and server communication over TCP","A data exchange mechanism between both sides","A server that receives, processes and answers requests","A client interface to talk to the server","Monitoring with live logs","Connection performance measured with RTT","Multiple concurrent requests via multi-threading"]},
+ tech:["TCP Networking","Client-Server Architecture","Socket Programming","Multi-threading","System Design"],learned:null}
+];
+
+/* certificate pictures are read from images/<id>.jpg (e.g. images/c-nvidia.jpg); set image:"..." to use a different path */
+const CERTS = [
+ {id:"c-nvidia",image:"",o:"NVIDIA",t:"Building Transformer-Based Natural Language Processing Applications",d:{ar:"Transformer Architectures · تطبيقات NLP · النماذج اللغوية",en:"Transformer architectures · NLP applications · language models"}},
+ {id:"c-nlp",image:"",o:{ar:"أكاديمية طويق",en:"Tuwaiq Academy"},t:"Natural Language Processing (NLP)",d:{ar:"معالجة النصوص · أساسيات NLP · تطبيقات الذكاء الاصطناعي",en:"Text processing · NLP fundamentals · AI applications"}},
+ {id:"c-ibm",image:"",o:"IBM",t:"Project Based Learning Programme in Data Analysis",d:{ar:"تحليل البيانات · معالجة البيانات · مسارات التحليل",en:"Data analysis · data processing · analytical workflows"}},
+ {id:"c-flutter",image:"",o:{ar:"جامعة الإمام محمد بن سعود",en:"Imam Mohammad Ibn Saud University"},t:"Flutter Bootcamp",d:{ar:"Flutter · تطوير تطبيقات الجوال",en:"Flutter development · mobile applications"}},
+ {id:"c-bc",image:"",o:"British Council",t:"English Course",d:{ar:"برنامج لتطوير مهارات اللغة الإنجليزية",en:"English language skills development"}},
+ {id:"c-tuwaiq",image:"",o:{ar:"أكاديمية طويق",en:"Tuwaiq Academy"},t:{ar:"تحدي طويق البرمجي",en:"Tuwaiq Programming Challenge"},d:{ar:"مشاركة وتطوير مهارات حل المشكلات والبرمجة",en:"Participation; problem solving and programming"}},
+ {id:"c-acm",image:"",o:"ACM",t:"Programming Jam 10",d:{ar:"فعالية برمجية تركز على حل المشكلات والخوارزميات",en:"Programming event focused on problem solving and algorithms"}}
+];
+const LEADS = [
+ {o:{ar:"المجلس الطلابي",en:"Student Council"},t:{ar:"ممثلة قسم علوم الحاسب",en:"Computer Science Department Representative"},d:{ar:"تمثيل طلاب قسم علوم الحاسب، ونقل احتياجاتهم وتنظيم المبادرات.",en:"Represented CS students, relayed their needs and organized initiatives."}},
+ {o:{ar:"المجلس الاستشاري لطلاب علوم الحاسب",en:"Computer Science Student Advisory Council"},t:{ar:"نائبة الرئيس",en:"Vice President"},d:{ar:"المساهمة في تنظيم الأنشطة والمبادرات الطلابية.",en:"Contributed to organizing student activities and initiatives."}},
+ {o:{ar:"المجلس الاستشاري لطلاب علوم الحاسب",en:"Computer Science Student Advisory Council"},t:{ar:"مشرفة",en:"Supervisor"},d:{ar:"دعم التواصل بين الطلاب والقسم الأكاديمي.",en:"Supported communication between students and the academic department."}},
+ {o:{ar:"أنشطة تطوعية",en:"Volunteer Activities"},t:{ar:"التطوع في الفعاليات",en:"Event Volunteering"},d:{ar:"المشاركة في الأنشطة الطلابية والمساهمة في تنظيم الفعاليات التقنية والأكاديمية.",en:"Took part in student activities and helped organize technical and academic events."}}
+];
+const FOCUS = [
+ {n:"01",t:{ar:"معالجة اللغة الطبيعية",en:"Natural Language Processing"},d:{ar:"فهم النصوص العربية واللهجات",en:"Understanding Arabic text and its dialects"}},
+ {n:"02",t:{ar:"النماذج اللغوية و RAG",en:"LLMs & RAG"},d:{ar:"إجابات مبنية على مصادر حقيقية",en:"Answers grounded in real sources"}},
+ {n:"03",t:{ar:"الرؤية الحاسوبية",en:"Computer Vision"},d:{ar:"نماذج CNN تحلّل الصور",en:"CNN models that read images"}},
+ {n:"04",t:{ar:"أنظمة الذكاء الاصطناعي",en:"AI Systems"},d:{ar:"من النموذج المدرَّب إلى منتج يعمل",en:"From a trained model to a working product"}}
+];
+
+/* skill icons: "b" = brand glyph (filled), "s" = stroke icon */
+const SKICON = {"Python":{"t":"b","d":"M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"},"TensorFlow":{"t":"b","d":"M1.292 5.856L11.54 0v24l-4.095-2.378V7.603l-6.168 3.564.015-5.31zm21.43 5.311l-.014-5.31L12.46 0v24l4.095-2.378V14.87l3.092 1.788-.018-4.618-3.074-1.756V7.603l6.168 3.564z"},"Keras":{"t":"b","d":"M24 0H0v24h24V0zM8.45 5.16l.2.17v6.24l6.46-6.45h1.96l.2.4-5.14 5.1 5.47 7.94-.2.3h-1.94l-4.65-6.88-2.16 2.08v4.6l-.19.2H7l-.2-.2V5.33l.17-.17h1.48z"},"FastAPI":{"t":"b","d":"M12 .0387C5.3729.0384.0003 5.3931 0 11.9988c-.001 6.6066 5.372 11.9628 12 11.9625 6.628.0003 12.001-5.3559 12-11.9625-.0003-6.6057-5.3729-11.9604-12-11.96m-.829 5.4153h7.55l-7.5805 5.3284h5.1828L5.279 18.5436q2.9466-6.5444 5.892-13.0896"},"JavaScript":{"t":"b","d":"M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"},"Figma":{"t":"b","d":"M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"},
+"ml":{"t":"s","d":'<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M9 13a4.5 4.5 0 0 0 3-4"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M12 13h4"/><path d="M12 18h6a2 2 0 0 1 2 2v1"/><path d="M12 8h8"/><path d="M16 8V5a2 2 0 0 1 2-2"/><circle cx="16" cy="13" r=".5"/><circle cx="18" cy="3" r=".5"/><circle cx="20" cy="21" r=".5"/><circle cx="20" cy="8" r=".5"/>'},
+"dl":{"t":"s","d":'<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>'},
+"nlp":{"t":"s","d":'<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M7 11h10"/><path d="M7 15h6"/><path d="M7 7h8"/>'},
+"llm":{"t":"s","d":'<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>'},
+"rag":{"t":"s","d":'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 15 21.84"/><path d="M21 5V8"/><path d="M21 12L18 17H22L19 22"/><path d="M3 12A9 3 0 0 0 14.59 14.87"/>'},
+"cv":{"t":"s","d":'<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0"/>'},
+"tr":{"t":"s","d":'<path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"/><rect x="14" y="2" width="8" height="8" rx="1"/>'},
+"vdb":{"t":"s","d":'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>'},
+"tcp":{"t":"s","d":'<path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/>'},
+"java":{"t":"s","d":'<path d="M10 2v3M14 2v3"/><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M5 22h12"/>'},
+"html":{"t":"s","d":'<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>'},
+"css":{"t":"s","d":'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>'},
+"search":{"t":"s","d":'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6M11 8v6"/>'},
+"chart":{"t":"s","d":'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>'},
+"layers":{"t":"s","d":'<path d="M12 2 2 7l10 5 10-5z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/>'},
+"server":{"t":"s","d":'<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 6h.01M6 18h.01"/>'},
+"cpu":{"t":"s","d":'<rect width="14" height="14" x="5" y="5" rx="2"/><rect width="6" height="6" x="9" y="9"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'},
+"git":{"t":"s","d":'<circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="9" r="2.2"/><path d="M6 8.2v7.6"/><path d="M18 11.2c0 4-6 3-11 5"/>'},
+"flask":{"t":"s","d":'<path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/>'},
+"bolt":{"t":"s","d":'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'},
+"clip":{"t":"s","d":'<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>'},
+"flag":{"t":"s","d":'<path d="M4 22V4"/><path d="M4 4h13l-2 4 2 4H4"/>'},
+"users":{"t":"s","d":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'},
+"chat":{"t":"s","d":'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+"bulb":{"t":"s","d":'<path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>'},
+"shield":{"t":"s","d":'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/>'}};
+/* skills: icon + name only (add or remove freely; i = key in SKICON) */
+const SK = [
+ {n:"Python",i:"Python"},{n:"Java",i:"java"},{n:"JavaScript",i:"JavaScript"},{n:"SQL",i:"vdb"},{n:"HTML",i:"html"},{n:"CSS",i:"css"},
+ {n:"Machine Learning",i:"ml"},{n:"Deep Learning",i:"dl"},{n:"NLP",i:"nlp"},{n:"Transformer-Based Applications",i:"tr"},{n:"LLMs",i:"llm"},{n:"RAG",i:"rag"},
+ {n:"Computer Vision",i:"cv"},{n:"AI Search Algorithms",i:"search"},{n:"Data Analysis",i:"chart"},{n:"TensorFlow",i:"TensorFlow"},{n:"Keras",i:"Keras"},{n:"Vector Databases",i:"vdb"},
+ {n:"Full-Stack Development",i:"layers"},{n:"Flask",i:"flask"},{n:"FastAPI",i:"FastAPI"},{n:"Supabase",i:"bolt"},{n:"Client-Server Architecture",i:"server"},
+ {n:"Multithreaded Systems",i:"cpu"},{n:"TCP/IP Programming",i:"tcp"},{n:"Git & GitHub",i:"git"},
+ {n:"UI/UX Design (Figma)",i:"Figma"},{n:{ar:"تنسيق المشاريع",en:"Project Coordination"},i:"clip"},
+ {n:{ar:"القيادة الاستراتيجية",en:"Strategic Leadership"},i:"flag"},{n:{ar:"العمل الجماعي",en:"Team Collaboration"},i:"users"},
+ {n:{ar:"التواصل",en:"Communication"},i:"chat"},{n:{ar:"حل المشكلات",en:"Problem Solving"},i:"bulb"},{n:{ar:"إدارة الأزمات",en:"Crisis Management"},i:"shield"}
+];
+
+/* ---------- helpers ---------- */
+let lang = "en";
+try{ lang = localStorage.getItem("pf-lang") || "en"; }catch(e){}
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const T = k => UI[lang][k] ?? k;
+const L = o => (o && typeof o==="object" && !Array.isArray(o)) ? (o[lang]||o.en) : o;
+const EDIT = location.hash === "#edit";
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+/* project pictures are read from images/<id>.jpg (e.g. images/rasd.jpg); add more with  images:["images/rasd.jpg","images/rasd-2.jpg"]  inside a project */
+const getImgs = p => [...(p.images||["images/"+p.id+".jpg"]), ...(store.get("pf-img-"+p.id)||[])];
+const LOGO_DEFAULT = document.getElementById("logoSlot").innerHTML;
+/* if an image file is missing, fall back to the beige placeholder instead of a broken icon */
+function fb(im){ const d=document.createElement("div"); d.className="art"; d.style.setProperty("--h",im.dataset.h||0); const b=document.createElement("b"); b.textContent=im.dataset.n||""; d.appendChild(b); im.replaceWith(d); }
+function fbc(im){ const cf=im.closest(".cf"); if(cf){ cf.removeAttribute("data-lb"); cf.style.cursor="default"; } const d=document.createElement("div"); d.className="ph"; const b=document.createElement("b"); b.textContent=im.dataset.n||""; d.appendChild(b); im.replaceWith(d); }
+const split = el => { el.innerHTML = el.textContent.trim().split(/\s+/).map((w,i)=>`<span class="w" style="--i:${i}">${esc(w)}</span>`).join(" "); el.classList.add("sp"); };
+
+const ICON = {
+  li:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+  gh:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.921.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>',
+  ml:'<svg class="st" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+  cv:'<svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  ph:'<svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg>'
+};
+const projLabel = (p, card) => p.gh ? T("card_gh") : p.proto ? T(card?"card_proto":"prototype") : T(card?"card_live":"live");
+
+function frame(p, i){
+  const imgs = getImgs(p);
+  const media = imgs.length ? `<img src="${imgs[i||0]}" alt="${esc(L(p.name))}" data-h="${p.h}" data-n="${esc(L(p.name))}" onerror="fb(this)">` : `<div class="art" style="--h:${p.h}"><b>${esc(L(p.name))}</b></div>`;
+  return `<div class="frame zoomfx"><div class="media">${media}</div></div>`;
+}
+/* Every button opens the real destination outside the portfolio (fill in PROFILE at the top) */
+function actions(){
+  const mk = (cls, label, href, icon) => {
+    const url = href || "#contact";
+    const ext = /^https?:/.test(url) || /^mailto:/.test(url) || /\.pdf$/i.test(url);
+    return `<a class="sb ${cls}" href="${esc(url)}" ${ext && !/^mailto:/.test(url) ? 'target="_blank" rel="noopener"' : ""} aria-label="${esc(label)}" title="${esc(label)}">${icon}<span>${esc(label)}</span></a>`;
+  };
+  return mk("li", T("a_linkedin"), PROFILE.linkedin, ICON.li)
+       + mk("ml", T("a_email"), PROFILE.email ? "mailto:"+PROFILE.email : "", ICON.ml)
+       + mk("gh", T("a_github"), PROFILE.github, ICON.gh)
+       + mk("cv", T("a_cv"), PROFILE.cv, ICON.cv);
+}
+function hireHref(){ return PROFILE.email ? "mailto:"+PROFILE.email+"?subject="+encodeURIComponent("Hiring inquiry") : (PROFILE.linkedin || "#contact"); }
+
+function render(){
+  const d = document.documentElement;
+  d.lang = lang; d.dir = lang==="ar" ? "rtl" : "ltr";
+  $$("[data-t]").forEach(el=>el.textContent = T(el.dataset.t));
+  $("#langBtn span").textContent = lang==="ar" ? "عربي" : "ع";
+  const nm = L(PROFILE.name);
+  $("#heroName").innerHTML = nm.trim().split(/\s+/).map((w,i)=>`<span class="hw"><span style="--i:${i}">${esc(w)}</span></span>`).join(" ");
+  document.title = nm + " | Portfolio";
+  $("#foot").textContent = "© " + new Date().getFullYear() + " " + nm;
+  $$("[data-split]").forEach(split);
+  $$("[data-acts]").forEach(el=>el.innerHTML = actions());
+  const hh = hireHref(); $("[data-hire]").href = hh;
+  if(/^https?:/.test(hh)) $("[data-hire]").target = "_blank";
+
+  const logo = store.get("pf-logo") || UNI_LOGO;
+  if(logo){ $("#logoSlot").classList.add("has"); $("#logoSlot").innerHTML = `<img src="${logo}" alt="" onerror="const p=this.parentElement;p.classList.remove('has');p.innerHTML=LOGO_DEFAULT">`; }
+  $("#focusIn").innerHTML = FOCUS.map(f=>`<div class="fc rv"><i>${f.n}</i><b>${esc(L(f.t))}</b><p>${esc(L(f.d))}</p></div>`).join("");
+  $("#langs").innerHTML = `<span>${T("lang_ar")}<em>${T("lvl_native")}</em></span><span>${T("lang_en")}<em>${T("lvl_course")}</em></span>`;
+  $("#stats").innerHTML = [[P.length,"s_proj"],[CERTS.length,"s_cert"],[LEADS.length,"s_lead"],[2,"s_lang"]].map(([n,k])=>`<div class="stat rv"><b data-n="${n}">${n}</b><span>${T(k)}</span></div>`).join("");
+
+  $("#projList").innerHTML = P.map(p=>`
+    <div class="card" data-id="${p.id}" role="button" tabindex="0">
+      ${frame(p)}
+      <div class="card-meta rv"><div><span class="mono" style="color:var(--accent)">${esc(p.type)}</span>
+        <h3>${esc(L(p.name))}</h3><p>${esc(L(p.sub))}</p>
+        <div class="tags">${p.tech.slice(0,4).map(t=>`<span>${esc(t)}</span>`).join("")}</div>
+        ${p.link?`<a class="demo" href="${esc(p.link)}" target="_blank" rel="noopener">${p.gh?ICON.gh:""}${projLabel(p,true)} ↗</a>`:""}</div>
+        <span class="go">${ARROW}</span></div>
+    </div>`).join("");
+
+  $("#hsTrack").innerHTML = SK.map(it=>{
+    const ic = SKICON[it.i];
+    const svg = ic.t==="b" ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic.d}"/></svg>` : `<svg class="st" viewBox="0 0 24 24" aria-hidden="true">${ic.d}</svg>`;
+    return `<div class="sk"><span class="ic">${svg}</span><b>${esc(L(it.n))}</b></div>`;
+  }).join("");
+  $("#certList").innerHTML = CERTS.map(c=>{
+    const im = c.image || (store.get("pf-img-"+c.id)||[])[0] || "images/"+c.id+".jpg";
+    const up = EDIT ? `<label class="up">${T("addimg")}<input type="file" accept="image/*" hidden data-add="${c.id}" data-single="1"></label>` : "";
+    return `<article class="cert rv"><div class="cf" ${im?`data-lb="${esc(im)}"`:""}>
+      ${im?`<img src="${im}" alt="${esc(L(c.t))}" data-n="${esc(L(c.t))}" onerror="fbc(this)">`:`<div class="ph"><b>${esc(L(c.t))}</b></div>`}${up}</div>
+      <span class="org">${esc(L(c.o))}</span><h3>${esc(L(c.t))}</h3><small>${esc(L(c.d))}</small></article>`;
+  }).join("");
+  $("#leads").innerHTML = LEADS.map(c=>`<li class="rv"><span class="org">${esc(L(c.o))}</span><h3>${esc(L(c.t))}</h3><small>${esc(L(c.d))}</small></li>`).join("");
+
+  const rows = [["linkedin",PROFILE.linkedin,PROFILE.linkedin,"linkedin.com/in/your-name"],["email",PROFILE.email,PROFILE.email?"mailto:"+PROFILE.email:"","you@example.com"],
+    ["phone",PROFILE.phone,"","+966 5X XXX XXXX"],["github",PROFILE.github,PROFILE.github,"github.com/your-name"]];
+  $("#contactRows").innerHTML = rows.map(([k,val,href,ph])=>{
+    const shown = val ? esc(val.replace(/^https?:\/\/(www\.)?/,"")) : `<span style="opacity:.35">${ph}</span>`;
+    const inner = `<span class="mono"><i class="ci">${({linkedin:ICON.li,email:ICON.ml,phone:ICON.ph,github:ICON.gh})[k]}</i>${T(k)}</span><strong>${shown}</strong>`;
+    if(href && /^https?:/.test(href)) return `<a class="crow rv" href="${esc(href)}" target="_blank" rel="noopener">${inner}<span class="mono">↗</span></a>`;
+    return `<div class="crow rv">${inner}${val?`<button type="button" data-copy="${esc(val)}">${T("copy")}</button>`:"<span></span>"}</div>`;
+  }).join("");
+
+  /* tag static blocks for reveal + stagger */
+  $$(".about p,.langs,.eyebrow").forEach(el=>{ if(!el.closest(".hero")&&!el.closest(".sheet")) el.classList.add("rv"); });
+  $$(".rv").forEach(el=>{ const i=[...el.parentElement.children].indexOf(el); el.style.setProperty("--d",(Math.min(i,5)*0.08)+"s"); });
+  zoomEls = $$(".zoomfx");
+  if(reduce){ $$(".rv,.sp").forEach(e=>e.classList.add("in")); }
+  if($("#sheet").classList.contains("open")) openSheet(currentId, true);
+  hsMeasure();
+  update();
+}
+
+/* ---------- detail sheet ---------- */
+let currentId = null, lastFocus = null, zoomEls = [];
+function openSheet(id, keep){
+  const p = P.find(x=>x.id===id); if(!p) return;
+  currentId = id;
+  const imgs = getImgs(p);
+  const gal = imgs.length ? imgs.map((s,i)=>frame(p,i)).join("") : frame(p);
+  const add = EDIT ? `<label class="add">${T("addimg")}<input type="file" accept="image/*" multiple hidden data-add="${p.id}"></label>` : "";
+  const b = arr => `<ul class="b">${arr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+  $("#sheetKick").textContent = p.type;
+  $("#sheetBody").innerHTML = `<h2>${esc(L(p.name))}</h2><p class="sum">${esc(L(p.sum))}</p>
+    ${p.link?`<div class="links"><a class="btn" href="${esc(p.link)}" target="_blank" rel="noopener">${projLabel(p,false)} ↗</a></div>`:""}
+    <div class="gal">${gal}${add}</div>
+    <div class="sheet-cols">
+      <div><h3>${T("type_built")}</h3>${b(L(p.built))}</div>
+      <div><h3>${T("type_tech")}</h3><div class="tags" style="margin-bottom:28px">${p.tech.map(t=>`<span>${esc(t)}</span>`).join("")}</div>
+      ${p.learned?`<h3>${T("learned")}</h3>${b(L(p.learned))}`:""}</div></div>`;
+  const s = $("#sheet"); s.classList.add("open"); s.setAttribute("aria-hidden","false");
+  if(!keep){ s.scrollTop = 0; lastFocus = document.activeElement; document.body.style.overflow="hidden"; $("#closeBtn").focus(); }
+  zoomEls = $$(".zoomfx"); update();
+}
+function closeSheet(){
+  $("#sheet").classList.remove("open"); $("#sheet").setAttribute("aria-hidden","true");
+  document.body.style.overflow=""; currentId=null;
+  if(lastFocus) try{lastFocus.focus()}catch(e){}
+}
+
+/* ---------- scroll engine ---------- */
+const clamp = (v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+function countUp(el){
+  const n = +el.dataset.n; if(reduce||!n) return;
+  const t0 = performance.now();
+  (function step(t){ const k = clamp((t-t0)/1400); el.textContent = Math.round(n*(1-Math.pow(1-k,3))); if(k<1) requestAnimationFrame(step); })(t0);
+}
+
+/* hero: the page scrolls normally; only the name/panel ease with a smoothed value */
+let tp = 0, hp = 0, hRun = false;
+function heroApply(){
+  const e = 1-Math.pow(1-hp,2), ws = $$("#heroName .hw");
+  $("#blobs").style.transform = `translate3d(0,${e*12}vh,0)`;
+  ws.forEach((w,i)=>{ const dir = ws.length>1 ? (i%2 ? 1 : -1) : 0; w.style.transform = `translate3d(${dir*e*28}vw,0,0)`; });
+  $("#heroMid").style.transform = `translate3d(0,${hp*6}vh,0) scale(${1+hp*0.35})`;
+  $("#heroMid").style.opacity = 1-clamp(hp*1.25);
+  $("#heroFoot").style.opacity = 1-clamp(hp*1.8);
+  $("#cue").style.opacity = 1-clamp(hp*3);
+  $("#heroFoot").style.pointerEvents = hp>.5 ? "none" : "";
+}
+function heroTick(){
+  hp += (tp-hp)*.16;
+  if(Math.abs(tp-hp)<.0008) hp = tp;
+  heroApply();
+  if(hp!==tp) requestAnimationFrame(heroTick); else hRun = false;
+}
+let hsDist = 0;
+function hsMeasure(){
+  const hs = $("#hs"); if(!hs) return;
+  if(reduce){ hs.style.height = "auto"; return; }
+  hsDist = Math.max(0, $("#hsTrack").scrollWidth - innerWidth);
+  hs.style.height = ($("#hsIn").offsetHeight + hsDist) + "px";
+}
+function hsApply(){
+  const hs = $("#hs"); if(!hs || reduce) return;
+  const r = hs.getBoundingClientRect(), total = hs.offsetHeight - innerHeight;
+  const p = total>0 ? clamp(-r.top/total) : 0;
+  $("#hsTrack").style.transform = `translate3d(${-p*hsDist}px,0,0)`;
+  $("#hsDot").style.left = (p*100)+"%";
+}
+function update(){
+  const vh = innerHeight, y = scrollY;
+  $("#nav").classList.toggle("solid", y > vh*0.75);
+  const max = document.documentElement.scrollHeight - vh;
+  $("#bar").style.transform = `scaleX(${max>0?clamp(y/max):0})`;
+
+  hsApply();
+  tp = reduce ? 0 : clamp(y/vh);
+  if(!hRun){ hRun = true; requestAnimationFrame(heroTick); }
+
+  zoomEls.forEach(el=>{
+    const r = el.getBoundingClientRect();
+    if(r.bottom < -60 || r.top > vh+60) return;
+    let k = reduce ? 1 : clamp((vh - r.top)/(vh*0.75));
+    k = 1-Math.pow(1-k,2);
+    el.style.setProperty("--inset", ((1-k)*9)+"%");
+    el.style.setProperty("--rad", (30*(1-k)+10*k)+"px");
+    el.style.setProperty("--z", (1.35-.35*k).toFixed(3));
+  });
+  $$(".rv:not(.in),.sp:not(.in)").forEach(el=>{
+    const r = el.getBoundingClientRect();
+    if(r.top < vh*0.92 && r.bottom > 0){
+      el.classList.add("in");
+      const c = el.querySelector("[data-n]") || (el.dataset.n ? el : null); if(c) countUp(c);
+    }
+  });
+}
+let tick=false;
+function onScroll(){ if(tick) return; tick=true; requestAnimationFrame(()=>{tick=false;update()}); }
+addEventListener("scroll", onScroll, {passive:true, capture:true});
+addEventListener("resize", ()=>{ hsMeasure(); onScroll(); });
+addEventListener("load", ()=>{ hsMeasure(); onScroll(); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ hsMeasure(); onScroll(); });
+
+/* ---------- events ---------- */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  if(t.closest(".card a")) return;              /* live demo / prototype / GitHub link: just follow it */
+  const card = t.closest("[data-id]"); if(card){ openSheet(card.dataset.id); return; }
+  if(t.closest("#closeBtn")){ closeSheet(); return; }
+  const lb = t.closest("[data-lb]"); if(lb && !t.closest(".up")){ $("#lb img").src = lb.dataset.lb; $("#lb").classList.add("open"); return; }
+  if(t.closest("#lb")){ $("#lb").classList.remove("open"); return; }
+  const cp = t.closest("[data-copy]");
+  if(cp){
+    const done = ()=>{ cp.textContent=T("copied"); setTimeout(()=>cp.textContent=T("copy"),1400); };
+    (navigator.clipboard ? navigator.clipboard.writeText(cp.dataset.copy) : Promise.reject()).then(done).catch(()=>{
+      const r=document.createRange(); r.selectNodeContents(cp.closest(".crow").querySelector("strong")); const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+    });
+  }
+});
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){ if($("#lb").classList.contains("open")) $("#lb").classList.remove("open"); else if(currentId) closeSheet(); }
+  if((e.key==="Enter"||e.key===" ") && e.target.classList && e.target.classList.contains("card")){ e.preventDefault(); openSheet(e.target.dataset.id); }
+});
+$("#langBtn").addEventListener("click", ()=>{ lang = lang==="ar"?"en":"ar"; try{localStorage.setItem("pf-lang",lang)}catch(e){} render(); });
+
+function shrink(file, max=1600){
+  return new Promise(res=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{ const im = new Image(); im.onload = ()=>{
+      const k = Math.min(1, max/Math.max(im.width, im.height));
+      const cv = document.createElement("canvas"); cv.width = im.width*k; cv.height = im.height*k;
+      cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL("image/jpeg",.82)); };
+      im.src = fr.result; };
+    fr.readAsDataURL(file);
+  });
+}
+document.addEventListener("change", async e=>{
+  const t = e.target;
+  if(t.dataset.add){
+    const list = t.dataset.single ? [] : (store.get("pf-img-"+t.dataset.add) || []);
+    for(const f of t.files) list.push(await shrink(f));
+    store.set("pf-img-"+t.dataset.add, list); render();
+  }
+  if(t.dataset.logo){ store.set("pf-logo", await shrink(t.files[0], 300)); render(); }
+});
+if(EDIT){ $("#logoSlot").insertAdjacentHTML("beforeend",'<input type="file" accept="image/*" hidden data-logo="1">'); $("#logoSlot").style.cursor="pointer"; }
+
+/* ---------- hero: mist follows the pointer very slightly ---------- */
+(function(){
+  const mist = $("#mist"); if(!mist || reduce) return;
+  let tx=0, ty=0, x=0, y=0, run=false;
+  function tick(){
+    x += (tx-x)*.05; y += (ty-y)*.05;
+    mist.style.transform = `translate3d(${(-x*5).toFixed(2)}vmax,${(-y*4).toFixed(2)}vmax,0)`;
+    if(Math.abs(tx-x)+Math.abs(ty-y) > .0005) requestAnimationFrame(tick); else run = false;
+  }
+  addEventListener("pointermove", ev=>{ tx = ev.clientX/innerWidth-.5; ty = ev.clientY/innerHeight-.5; if(!run){ run = true; requestAnimationFrame(tick); } }, {passive:true});
+})();
+
+/* ---------- pointer touches (desktop only): buttons lean toward the pointer, the big name leans away ---------- */
+(function(){
+  if(reduce || !matchMedia("(hover:hover) and (pointer:fine)").matches) return;
+  let nx=0, ny=0, px=0, py=0, run=false, mag=null;
+  function loop(){
+    px += (nx-px)*.06; py += (ny-py)*.06;
+    const h = $("#heroName"); if(h && scrollY < innerHeight) h.style.transform = `translate3d(${(px*-18).toFixed(2)}px,${(py*-12).toFixed(2)}px,0)`;
+    if(Math.abs(nx-px)+Math.abs(ny-py) > .002) requestAnimationFrame(loop); else run = false;
+  }
+  addEventListener("pointermove", e=>{
+    nx = e.clientX/innerWidth-.5; ny = e.clientY/innerHeight-.5;
+    const m = e.target.closest(".sb,.pill.ink,.demo,.btn");
+    if(m !== mag){ if(mag) mag.style.transform = ""; mag = m; }
+    if(mag){ const r = mag.getBoundingClientRect(); mag.style.transform = `translate3d(${((e.clientX-(r.left+r.width/2))*.25).toFixed(1)}px,${((e.clientY-(r.top+r.height/2))*.35).toFixed(1)}px,0)`; }
+    if(!run){ run = true; requestAnimationFrame(loop); }
+  }, {passive:true});
+  document.addEventListener("pointerleave", ()=>{ if(mag){ mag.style.transform = ""; mag = null; } });
+})();
+
+/* ---------- background: tiny floating dust that drifts with scroll and shies away from the pointer ---------- */
+(function(){
+  const cv = $("#dust"); if(!cv) return; const ctx = cv.getContext("2d");
+  let W=0, H=0, ds=[], run=false, mx=-999, my=-999, lastY=scrollY;
+  function size(){
+    const dpr = Math.min(2, devicePixelRatio||1); W = innerWidth; H = innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(Math.min(70, Math.max(26, W*H/22000)));
+    ds = Array.from({length:n}, ()=>{ const z = Math.random();
+      return {x:Math.random()*W, y:Math.random()*H, z, r:.8+z*1.9, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18, a:.18+z*.32, ph:Math.random()*6.3}; });
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    const dy = scrollY-lastY; lastY = scrollY;
+    for(const d of ds){
+      d.x += d.vx; d.y += d.vy - dy*d.z*.35;
+      if(d.x<-10) d.x=W+10; else if(d.x>W+10) d.x=-10;
+      if(d.y<-10) d.y=H+10; else if(d.y>H+10) d.y=-10;
+      const ex = d.x-mx, ey = d.y-my, e2 = ex*ex+ey*ey;
+      if(e2 < 14000){ const k = 1-e2/14000, m = Math.sqrt(e2)||1; d.x += ex/m*k*1.4; d.y += ey/m*k*1.4; }
+      const tw = .75+.25*Math.sin(t*.0015+d.ph);
+      ctx.fillStyle = `rgba(35,30,21,${(d.a*tw).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,6.283); ctx.fill();
+    }
+  }
+  function loop(t){ if(!run) return; draw(t); requestAnimationFrame(loop); }
+  function start(){ if(run || reduce || document.hidden) return; run = true; requestAnimationFrame(loop); }
+  addEventListener("pointermove", ev=>{ mx = ev.clientX; my = ev.clientY; }, {passive:true});
+  document.addEventListener("pointerleave", ()=>{ mx = my = -999; });
+  document.addEventListener("visibilitychange", ()=>{ if(document.hidden) run = false; else start(); });
+  let rt; addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(()=>{ size(); if(reduce) draw(0); }, 150); });
+  size();
+  if(reduce) draw(0); else start();
+})();
+
+/* ---------- contact form ---------- */
+function toast(msg){ const t = $("#toast"); $("#toastMsg").textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(()=>t.classList.remove("show"), 4200); }
+$("#cform").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const f = e.target, note = $("#fnote"), btn = f.querySelector("button"), d = Object.fromEntries(new FormData(f));
+  note.className = "fnote";
+  if(d._gotcha) return;                                   /* spam trap */
+  if(!d.name.trim() || !/^\S+@\S+\.\S+$/.test(d.email.trim()) || !d.message.trim()){ note.textContent = T("f_err_v"); note.classList.add("err"); return; }
+  if(PROFILE.formEndpoint){
+    btn.disabled = true; note.textContent = T("f_sending");
+    try{
+      const r = await fetch(PROFILE.formEndpoint, {method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body:JSON.stringify({name:d.name, email:d.email, message:d.message})});
+      if(!r.ok) throw new Error("bad status");
+      f.reset(); note.textContent = ""; toast(T("f_ok"));
+    }catch(_){ note.textContent = T("f_err"); note.classList.add("err"); }
+    btn.disabled = false;
+  } else if(PROFILE.email){
+    const body = d.message + "\n\n— " + d.name + " (" + d.email + ")";
+    note.textContent = T("f_mailto"); note.classList.add("ok");
+    location.href = "mailto:" + PROFILE.email + "?subject=" + encodeURIComponent("Portfolio message from " + d.name) + "&body=" + encodeURIComponent(body);
+  } else { note.textContent = T("f_err"); note.classList.add("err"); }
+});
+
+render();
+</script>
+</body>
+</html>
